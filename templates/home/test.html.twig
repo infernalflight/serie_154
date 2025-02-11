@@ -8,6 +8,8 @@
     </div>
 {#    {% dump(promo) %}#}
 {#    {% set students = ['tim', 'said', 'soto', 'amelie'] %}#}
+    {# Attention Filtre à éviter #}
+{#    {{ test | raw }}#}
 
     <ul>
     {% for k, student in promo %}

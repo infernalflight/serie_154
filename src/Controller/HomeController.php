@@ -29,12 +29,15 @@ final class HomeController extends AbstractController
     {
         $students = ['tim', 'said', 'soto', 'amelie'];
 
-//        dump($students);
-        dd($students);
+        dump($students);
+//        dd($students);
+
+        $test = "<script>alert('Hello')</script>";
 
         return $this->render('home/test.html.twig', [
             'title' => 'Test',
             'promo' => $students,
+            'test' => $test
         ]);
     }
 }
