@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} - {{ title }}{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        <h1>{{ title }}</h1>
+    </div>
+{#    {% dump(promo) %}#}
+{#    {% set students = ['tim', 'said', 'soto', 'amelie'] %}#}
+
+    <ul>
+    {% for k, student in promo %}
+        <li>
+            {{ k ~ ' : ' ~ student }}
+            / {{ k }} : {{ student }}
+            / {{ student | capitalize }}
+            {% if student is same as 'amelie' %}
+                - Poney
+            {%  endif %}
+        </li>
+    {% endfor %}
+    </ul>
+
+    <p>{{ promo[0] }}</p>
+{% endblock %}
