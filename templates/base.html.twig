@@ -19,6 +19,15 @@
     {% include 'partials/header.html.twig' %}
 
     <main class="container">
+        {# Notif Display#}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         {% block body %}
         {% endblock %}
     </main>

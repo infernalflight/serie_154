@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Serie;
+use App\Form\SerieType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/serie', name: 'app_serie_')]
+#[Route('/serie', name: 'serie_')]
 final class SerieController extends AbstractController
 {
     #[Route('/', name: 'list', methods: ['GET'])]
@@ -74,12 +76,38 @@ final class SerieController extends AbstractController
         ]);
     }
 
+    #[Route('/add', name: 'create', methods: ['GET', 'POST'])]
+    public function create(Request $request, EntityManagerInterface $em): Response
+    {
+        $serie = new Serie();
+        $serieForm = $this->createForm(SerieType::class, $serie);
+
+        // Traiter le form
+        $serieForm->handleRequest($request);
+
+        // Test
+        if($serieForm->isSubmitted() && $serieForm->isValid()) {
+            $serie->setCreatedAt(new \DateTimeImmutable());
+            $em->persist($serie);
+            $em->flush();
+            // Add Success Notif
+            $this->addFlash('success', 'Serie has been created.');
+            // Redir
+            return $this->redirectToRoute('app_serie_detail', ['id' => $serie->getId()]);
+        }
+
+        return $this->render('serie/new.html.twig', [
+            'title' => 'Add Serie',
+            'serieForm' => $serieForm,
+        ]);
+    }
+
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(int $id, EntityManagerInterface $em): Response
+    public function show(Serie $serie): Response
     {
         return $this->render('serie/show.html.twig', [
             'title' => 'Serie Detail',
-            'serie' => $em->getRepository(Serie::class)->find($id),
+            'serie' => $serie
         ]);
     }
 }

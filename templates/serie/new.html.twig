@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - {{ title }}{% endblock %}
+
+{% block body %}
+    <h2>{{ title }}</h2>
+
+    {{ form(serieForm) }}
+
+{% endblock %}
