@@ -35,8 +35,8 @@ class SerieType extends AbstractType
                     'Cancelled' => 'cancelled'
                 ]
             ])
-            ->add('vote')
-            ->add('popularity')
+            ->add('vote', TextType::class)
+            ->add('popularity',TextType::class)
             ->add('genres')
             ->add('firstAirDate', DateTimeType::class, [
                 'widget' => 'single_text',

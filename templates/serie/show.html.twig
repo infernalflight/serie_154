@@ -8,4 +8,7 @@
     <h2>{{ serie.name }}</h2>
     <div>{{ serie.overview }}</div>
     <div>{{ serie.vote }}</div>
+
+    <a href="{{ path('serie_update', {'id' : serie.id }) }}" class="btn btn-primary">Mettre à jour</a>
+
 {% endblock %}

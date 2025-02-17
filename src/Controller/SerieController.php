@@ -17,7 +17,7 @@ final class SerieController extends AbstractController
     public function index(EntityManagerInterface $em): Response
     {
         $serieRepo = $em->getRepository(Serie::class);
-//        $series = $serieRepo->findAll();
+        $series = $serieRepo->findAll();
 //        $serie = $serieRepo->find(5);
 
         // TODO Pensez à regarder les requête SQL générée histoire d'optimiser si nécessaire
@@ -25,7 +25,7 @@ final class SerieController extends AbstractController
 //        $series = $serieRepository->findBy([], ['popularity' => 'DESC', 'vote' => 'DESC'], 30);
 
         // Get DQL Method From Repository
-        $series = $serieRepo->getOnlyBestSeriesDQL();
+        //$series = $serieRepo->getOnlyBestSeriesDQL();
 
         return $this->render('serie/index.html.twig', [
             'title' => 'Serie',
@@ -93,7 +93,7 @@ final class SerieController extends AbstractController
             // Add Success Notif
             $this->addFlash('success', 'Serie has been created.');
             // Redir
-            return $this->redirectToRoute('app_serie_detail', ['id' => $serie->getId()]);
+            return $this->redirectToRoute('serie_detail', ['id' => $serie->getId()]);
         }
 
         return $this->render('serie/new.html.twig', [
@@ -101,6 +101,32 @@ final class SerieController extends AbstractController
             'serieForm' => $serieForm,
         ]);
     }
+
+    #[Route('/update/{id}', name: 'update', requirements: ['id' => '\d+'])]
+    public function update(Serie $serie, Request $request, EntityManagerInterface $em): Response
+    {
+        $serieForm = $this->createForm(SerieType::class, $serie);
+
+        // Traiter le form
+        $serieForm->handleRequest($request);
+
+        // Test
+        if($serieForm->isSubmitted() && $serieForm->isValid()) {
+            $serie->setModifiedAt(new \DateTimeImmutable());
+
+            $em->flush();
+            // Add Success Notif
+            $this->addFlash('success', 'Serie has been updated.');
+            // Redir
+            return $this->redirectToRoute('serie_detail', ['id' => $serie->getId()]);
+        }
+
+        return $this->render('serie/new.html.twig', [
+            'title' => 'Update Serie',
+            'serieForm' => $serieForm,
+        ]);
+    }
+
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Serie $serie): Response

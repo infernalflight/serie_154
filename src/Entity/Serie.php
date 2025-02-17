@@ -5,9 +5,13 @@ namespace App\Entity;
 use App\Repository\SerieRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
 #[ORM\Entity(repositoryClass: SerieRepository::class)]
+#[ORM\UniqueConstraint(columns: ['name', 'first_air_date'])]
+#[UniqueEntity(fields: ['name', 'firstAirDate'], message: 'Une série avec ce nom et cette date existe déja !')]
 class Serie
 {
     #[ORM\Id]
@@ -25,7 +29,7 @@ class Serie
     #[ORM\Column(length: 50)]
     private ?string $status = null;
 
-    #[ORM\Column(type: 'decimal',precision: 3, scale: 1)]
+    #[ORM\Column(type: Types::DECIMAL)]
     private ?float $vote = null;
 
     #[ORM\Column(type: 'decimal',precision: 6, scale: 2)]
@@ -35,9 +39,11 @@ class Serie
     private ?string $genres = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\LessThan(propertyPath: 'lastAirDate')]
     private ?\DateTimeInterface $firstAirDate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\LessThan('today')]
     private ?\DateTimeInterface $lastAirDate = null;
 
     #[ORM\Column(length: 255)]
