@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: SerieRepository::class)]
 #[ORM\UniqueConstraint(columns: ['name', 'first_air_date'])]
 #[UniqueEntity(fields: ['name', 'firstAirDate'], message: 'Une série avec ce nom et cette date existe déja !')]
+#[ORM\HasLifecycleCallbacks]
 class Serie
 {
     #[ORM\Id]
@@ -203,9 +204,10 @@ class Serie
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    #[ORM\PrePersist]
+    public function setCreatedAt(): static
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
@@ -215,9 +217,10 @@ class Serie
         return $this->modifiedAt;
     }
 
-    public function setModifiedAt(?\DateTimeImmutable $modifiedAt): static
+    #[ORM\PreUpdate]
+    public function setModifiedAt(): static
     {
-        $this->modifiedAt = $modifiedAt;
+        $this->modifiedAt = new \DateTimeImmutable;
 
         return $this;
     }

@@ -87,7 +87,6 @@ final class SerieController extends AbstractController
 
         // Test
         if($serieForm->isSubmitted() && $serieForm->isValid()) {
-            $serie->setCreatedAt(new \DateTimeImmutable());
             $em->persist($serie);
             $em->flush();
             // Add Success Notif
@@ -112,8 +111,6 @@ final class SerieController extends AbstractController
 
         // Test
         if($serieForm->isSubmitted() && $serieForm->isValid()) {
-            $serie->setModifiedAt(new \DateTimeImmutable());
-
             $em->flush();
             // Add Success Notif
             $this->addFlash('success', 'Serie has been updated.');
