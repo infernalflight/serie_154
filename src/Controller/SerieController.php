@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Serie;
 use App\Form\SerieType;
+use App\Repository\SerieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -15,16 +16,23 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/serie', name: 'serie_')]
 final class SerieController extends AbstractController
 {
-    #[Route('/', name: 'list', methods: ['GET'])]
-    public function index(EntityManagerInterface $em): Response
+    #[Route('/list/{page}', name: 'list', requirements: ['page' => '\d+'], defaults: ['page' => 1])]
+    public function index(int $page, SerieRepository $serieRepository): Response
     {
-        $serieRepo = $em->getRepository(Serie::class);
-        $series = $serieRepo->findAll();
+
+
+       // $series = $serieRepo->findAll();
+
 //        $serie = $serieRepo->find(5);
 
         // TODO Pensez à regarder les requête SQL générée histoire d'optimiser si nécessaire
 //        $serie = $serieRepo->findBy(['name' => 'pif']);
-//        $series = $serieRepository->findBy([], ['popularity' => 'DESC', 'vote' => 'DESC'], 30);
+
+        $offset = ($page - 1) * 12;
+
+       // $series = $serieRepository->findBy([], ['popularity' => 'DESC', 'vote' => 'DESC'], 12, $offset);
+
+        $series = $serieRepository->getSeriesWithSeasons($offset);
 
         // Get DQL Method From Repository
         //$series = $serieRepo->getOnlyBestSeriesDQL();
@@ -32,6 +40,7 @@ final class SerieController extends AbstractController
         return $this->render('serie/index.html.twig', [
             'title' => 'Serie',
             'series' => $series,
+            'page' => $page,
         ]);
     }
 
@@ -152,8 +161,10 @@ final class SerieController extends AbstractController
 
 
     #[Route('/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(Serie $serie): Response
+    public function show(int $id, SerieRepository $serieRepository): Response
     {
+        $serie = $serieRepository->getSerieWithSeasons($id);
+
         return $this->render('serie/show.html.twig', [
             'title' => 'Serie Detail',
             'serie' => $serie

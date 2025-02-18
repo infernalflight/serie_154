@@ -3,12 +3,21 @@
 {% block title %}{{ parent() }} - {{ title }}{% endblock %}
 
 {% block body %}
+    <section>
+    {% if page > 1 %}
+        <a href="{{ path('serie_list', {'page' : page - 1}) }}">page précédente</a>
+    {% endif %}&nbsp;
+        <a href="{{ path('serie_list', {'page' : page + 1}) }}">page suivante</a>
+    </section>
     <section class="series-list">
         {% for serie in series %}
             <article>
                 <a href="{{ path('serie_detail', {'id' : serie.id }) }}" title="View series's details">
                     <img src="{{ asset("uploads/posters/series/" ~ serie.poster) }}" alt="{{ serie.name }}" loading="lazy">
                 </a>
+                {% for season in serie.seasons %}
+                    {{ season.number }} |
+                {% endfor %}
             </article>
         {% endfor %}
     </section>
