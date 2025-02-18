@@ -64,7 +64,6 @@ class SerieType extends AbstractType
                     ])
                 ]
             ])
-            ->add('tmdbId')
             ->add('button', SubmitType::class, [
                 'label' => 'Enregistrer votre série'
             ])

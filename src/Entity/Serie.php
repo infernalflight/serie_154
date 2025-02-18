@@ -43,17 +43,17 @@ class Serie
     #[Assert\LessThan(propertyPath: 'lastAirDate')]
     private ?\DateTimeInterface $firstAirDate = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Assert\LessThan('today')]
     private ?\DateTimeInterface $lastAirDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $backdrop = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $poster = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $tmdbId = null;
 
     #[ORM\Column]
