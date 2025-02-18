@@ -6,9 +6,11 @@ use App\Entity\Serie;
 use App\Form\SerieType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/serie', name: 'serie_')]
 final class SerieController extends AbstractController
@@ -77,7 +79,7 @@ final class SerieController extends AbstractController
     }
 
     #[Route('/add', name: 'create', methods: ['GET', 'POST'])]
-    public function create(Request $request, EntityManagerInterface $em): Response
+    public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $serie = new Serie();
         $serieForm = $this->createForm(SerieType::class, $serie);
@@ -87,6 +89,15 @@ final class SerieController extends AbstractController
 
         // Test
         if($serieForm->isSubmitted() && $serieForm->isValid()) {
+
+            if ($serieForm->get('poster_file')->getData() instanceOf UploadedFile) {
+                $posterFile = $serieForm->get('poster_file')->getData();
+                $name = $slugger->slug($serie->getName()) . '-' . uniqid() . '.' . $posterFile->guessExtension();
+                $posterFile->move('uploads/posters/series', $name);
+                
+                $serie->setPoster($name);
+            }
+
             $em->persist($serie);
             $em->flush();
             // Add Success Notif
@@ -102,7 +113,7 @@ final class SerieController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', requirements: ['id' => '\d+'])]
-    public function update(Serie $serie, Request $request, EntityManagerInterface $em): Response
+    public function update(Serie $serie, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $serieForm = $this->createForm(SerieType::class, $serie);
 
@@ -111,6 +122,21 @@ final class SerieController extends AbstractController
 
         // Test
         if($serieForm->isSubmitted() && $serieForm->isValid()) {
+
+            if ($serieForm->get('poster_file')->getData() instanceOf UploadedFile) {
+                $posterFile = $serieForm->get('poster_file')->getData();
+                $name = $slugger->slug($serie->getName()) . '-' . uniqid() . '.' . $posterFile->guessExtension();
+                $posterFile->move('uploads/posters/series', $name);
+
+                if ($serie->getPoster() && file_exists('uploads/posters/series/' . $serie->getPoster())) {
+                    unlink('uploads/posters/series/' . $serie->getPoster());
+                }
+
+
+                $serie->setPoster($name);
+            }
+
+
             $em->flush();
             // Add Success Notif
             $this->addFlash('success', 'Serie has been updated.');

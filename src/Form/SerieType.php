@@ -6,11 +6,13 @@ use App\Entity\Serie;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class SerieType extends AbstractType
 {
@@ -45,7 +47,23 @@ class SerieType extends AbstractType
                 'widget' => 'single_text',
             ])
             ->add('backdrop')
-            ->add('poster')
+            ->add('poster_file', FileType::class, [
+                'label' => 'Poster',
+                'required' => false,
+                'mapped' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'maxSizeMessage' => 'Trop lourd !!',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/jpg',
+                            'image/png',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image',
+                    ])
+                ]
+            ])
             ->add('tmdbId')
             ->add('button', SubmitType::class, [
                 'label' => 'Enregistrer votre série'
