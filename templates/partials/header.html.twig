@@ -19,13 +19,27 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('course_create') }}">Add Course</a>
             </li>
+            {% if is_granted('ROLE_USER') %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('serie_list') }}">Séries</a>
             </li>
+            {% endif %}
             {% if is_granted('ROLE_AUTEUR') %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('serie_create') }}">Add Série</a>
             </li>
+            {% endif %}
+            {% if is_granted('IS_AUTHENTICATED') %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_logout') }}">Deconnexion</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_register') }}">Créer un compte</a>
+                </li>
             {% endif %}
         </ul>
     </div>

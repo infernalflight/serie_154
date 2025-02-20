@@ -22,6 +22,7 @@ final class SerieController extends AbstractController
     public function index(int $page, SerieRepository $serieRepository): Response
     {
 
+        dd($this->getUser());
 
        // $series = $serieRepo->findAll();
 
