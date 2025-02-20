@@ -11,9 +11,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/serie', name: 'serie_')]
+#[IsGranted('ROLE_USER')]
 final class SerieController extends AbstractController
 {
     #[Route('/list/{page}', name: 'list', requirements: ['page' => '\d+'], defaults: ['page' => 1])]
@@ -88,6 +90,7 @@ final class SerieController extends AbstractController
     }
 
     #[Route('/add', name: 'create', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_AUTEUR')]
     public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
         $serie = new Serie();
@@ -172,6 +175,7 @@ final class SerieController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'delete', requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Serie $serie, EntityManagerInterface $em): Response
     {
         $em->remove($serie);

@@ -22,9 +22,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('serie_list') }}">Séries</a>
             </li>
+            {% if is_granted('ROLE_AUTEUR') %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ path('serie_create') }}">Add Série</a>
             </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
