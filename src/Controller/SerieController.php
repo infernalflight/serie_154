@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Helper\UploadFile;
+
 
 #[Route('/serie', name: 'serie_')]
 #[IsGranted('ROLE_USER')]
@@ -92,7 +94,7 @@ final class SerieController extends AbstractController
 
     #[Route('/add', name: 'create', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_AUTEUR')]
-    public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function create(Request $request, EntityManagerInterface $em, UploadFile $uploader): Response
     {
         $serie = new Serie();
         $serieForm = $this->createForm(SerieType::class, $serie);
@@ -103,11 +105,10 @@ final class SerieController extends AbstractController
         // Test
         if($serieForm->isSubmitted() && $serieForm->isValid()) {
 
+
             if ($serieForm->get('poster_file')->getData() instanceOf UploadedFile) {
                 $posterFile = $serieForm->get('poster_file')->getData();
-                $name = $slugger->slug($serie->getName()) . '-' . uniqid() . '.' . $posterFile->guessExtension();
-                $posterFile->move('uploads/posters/series', $name);
-                
+                $name = $uploader->upload($posterFile, $serie->getName(), 'uploads/posters/series');
                 $serie->setPoster($name);
             }
 
@@ -126,7 +127,7 @@ final class SerieController extends AbstractController
     }
 
     #[Route('/update/{id}', name: 'update', requirements: ['id' => '\d+'])]
-    public function update(Serie $serie, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function update(Serie $serie, Request $request, EntityManagerInterface $em, UploadFile $uploader): Response
     {
         $serieForm = $this->createForm(SerieType::class, $serie);
 
@@ -138,8 +139,7 @@ final class SerieController extends AbstractController
 
             if ($serieForm->get('poster_file')->getData() instanceOf UploadedFile) {
                 $posterFile = $serieForm->get('poster_file')->getData();
-                $name = $slugger->slug($serie->getName()) . '-' . uniqid() . '.' . $posterFile->guessExtension();
-                $posterFile->move('uploads/posters/series', $name);
+                $name = $uploader->upload($posterFile, $serie->getName(), 'uploads/posters/series');
 
                 if ($serie->getPoster() && file_exists('uploads/posters/series/' . $serie->getPoster())) {
                     unlink('uploads/posters/series/' . $serie->getPoster());
